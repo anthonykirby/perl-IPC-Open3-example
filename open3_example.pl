@@ -42,11 +42,18 @@ $SIG{CHLD} = sub {
 	# find out what happened to child
 	my $kid = waitpid($child_pid, WNOHANG);
 	my $child_status = $?;
+	print "child_status=$child_status\n";
 
 	if ($kid > 0) {
-		# normal termination
-		$child_result = ($child_status >> 8);
-		print "(child exited normally with result=$child_result)\n" if $COMMENTARY;
+		# child exited
+		if ($child_status & 127) {
+			# child died somehow
+			printf "child died with signal %d, %s coredump\n", ($? & 127),  ($? & 128) ? 'with' : 'without';
+		} else {
+			# child exited calmly
+			$child_result = ($child_status >> 8);
+			print "(child exited normally with result=$child_result)\n" if $COMMENTARY;
+		}
 	} else {
 		# unexpected (e.g. interrupted?)
 		print "(other SIGCHILD: pid=$child_pid: child_status=$child_status\n" if $COMMENTARY;
