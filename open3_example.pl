@@ -48,7 +48,7 @@ $SIG{CHLD} = sub {
 		# child exited
 		if ($child_status & 127) {
 			# child died somehow
-			printf "child died with signal %d, %s coredump\n", ($? & 127),  ($? & 128) ? 'with' : 'without';
+			die sprintf("child died with signal %d, %s coredump\n", ($? & 127),  ($? & 128) ? 'with' : 'without');
 		} else {
 			# child exited calmly
 			$child_result = ($child_status >> 8);
